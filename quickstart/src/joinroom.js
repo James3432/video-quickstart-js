@@ -121,16 +121,24 @@ function setVideoPriority(participant, priority) {
  * @param participant - the Participant which published the Track
  */
 function attachTrack(track, participant) {
-  // Attach the Participant's Track to the thumbnail.
-  const $media = $(`div#${participant.sid} > ${track.kind}`, $participants);
-  $media.css('opacity', '');
-  track.attach($media.get(0));
+  if(track.kind === 'video') {
+    // Attach the Participant's Track to the thumbnail.
+    const $media = $(`div#${participant.sid} > ${track.kind}`, $participants);
+    $media.css('opacity', '');
+    track.attach($media.get(0));
 
-  // If the attached Track is a VideoTrack that is published by the active
-  // Participant, then attach it to the main video as well.
-  if (track.kind === 'video' && participant === activeParticipant) {
-    track.attach($activeVideo.get(0));
-    $activeVideo.css('opacity', '');
+    // If the attached Track is a VideoTrack that is published by the active
+    // Participant, then attach it to the main video as well.
+    if (participant === activeParticipant) {
+      track.attach($activeVideo.get(0));
+      $activeVideo.css('opacity', '');
+    }
+  } else if(track.kind === 'audio') {
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    const stream = new MediaStream();
+    stream.addTrack(track.mediaStreamTrack)
+    const source = context.createMediaStreamSource(stream);
+    source.connect(context.destination);
   }
 }
 
