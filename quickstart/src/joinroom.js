@@ -134,11 +134,16 @@ function attachTrack(track, participant) {
       $activeVideo.css('opacity', '');
     }
   } else if(track.kind === 'audio') {
-    const context = new (window.AudioContext || window.webkitAudioContext)();
-    const stream = new MediaStream();
-    stream.addTrack(track.mediaStreamTrack)
-    const source = context.createMediaStreamSource(stream);
-    source.connect(context.destination);
+    console.log(track);
+    console.log(track.constructor.name);
+    if(track.constructor.name === 'RemoteAudioTrack') {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      const stream = new MediaStream();
+      stream.addTrack(track.mediaStreamTrack)
+      const source = context.createMediaStreamSource(stream);
+      source.connect(context.destination);
+      console.log('*** REMOTE TRACK ATTACHED TO AUDIOCONTEXT ***');
+    }
   }
 }
 
